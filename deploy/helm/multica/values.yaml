@@ -1,0 +1,165 @@
+# Default values for Multica.
+
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  commonLabels: {}
+  domain: ""
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+
+frontend:
+  enabled: true
+  image:
+    repository: ghcr.io/multica-ai/multica-web
+    tag: ""
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+  service:
+    type: ClusterIP
+    port: 3000
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts: []
+    tls: []
+  resources: {}
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+  env: []
+  existingSecret: ""
+
+backend:
+  enabled: true
+  image:
+    repository: ghcr.io/multica-ai/multica-server
+    tag: ""
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+  service:
+    type: ClusterIP
+    port: 8080
+  resources: {}
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+  env: []
+  existingSecret: ""
+  secretKeys:
+    jwtSecretKey: JWT_SECRET
+    googleClientIdKey: GOOGLE_CLIENT_ID
+    googleClientSecretKey: GOOGLE_CLIENT_SECRET
+    googleRedirectUriKey: GOOGLE_REDIRECT_URI
+    resendApiKeyKey: RESEND_API_KEY
+    resendFromEmailKey: RESEND_FROM_EMAIL
+    s3BucketKey: S3_BUCKET
+    s3RegionKey: S3_REGION
+    awsEndpointUrlKey: AWS_ENDPOINT_URL
+    cloudfrontDomainKey: CLOUDFRONT_DOMAIN
+    cloudfrontKeyPairIdKey: CLOUDFRONT_KEY_PAIR_ID
+    cloudfrontPrivateKeySecretKey: CLOUDFRONT_PRIVATE_KEY_SECRET
+    cookieDomainKey: COOKIE_DOMAIN
+    frontendOriginKey: FRONTEND_ORIGIN
+    multicaAppUrlKey: MULTICA_APP_URL
+    allowedOriginsKey: ALLOWED_ORIGINS
+    corsAllowedOriginsKey: CORS_ALLOWED_ORIGINS
+    localUploadBaseUrlKey: LOCAL_UPLOAD_BASE_URL
+  probes:
+    startup:
+      enabled: true
+      path: /health
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 12
+    readiness:
+      enabled: true
+      path: /health
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+    liveness:
+      enabled: true
+      path: /health
+      initialDelaySeconds: 15
+      periodSeconds: 20
+      timeoutSeconds: 5
+      failureThreshold: 6
+  persistence:
+    enabled: false
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    storageClass: ""
+
+externalDatabase:
+  enabled: true
+  host: postgres.example.com
+  port: 5432
+  name: multica
+  username: multica
+  existingSecret: multica-db
+  passwordKey: password
+
+postgresql:
+  enabled: false
+  auth:
+    database: multica
+    username: multica
+    existingSecret: ""
+    secretKeys:
+      adminPasswordKey: postgres-password
+      userPasswordKey: password
+  primary:
+    persistence:
+      enabled: true
+      size: 20Gi
+
+migrations:
+  enabled: true
+  backoffLimit: 3
+  annotations: {}
+
+storage:
+  mode: s3
+  existingSecret: ""
+  endpointKey: AWS_ENDPOINT_URL
+
+cloudfront:
+  enabled: false
+  existingSecret: ""
+  privateKeySecretKey: CLOUDFRONT_PRIVATE_KEY_SECRET
+
+networkPolicy:
+  enabled: false
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1

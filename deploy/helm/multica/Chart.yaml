@@ -1,0 +1,23 @@
+apiVersion: v2
+name: multica
+description: A Helm chart for self-hosting Multica on Kubernetes.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://multica.ai
+sources:
+  - https://github.com/multica-ai/multica
+keywords:
+  - agents
+  - collaboration
+  - nextjs
+  - golang
+  - postgresql
+maintainers:
+  - name: Multica
+    url: https://github.com/multica-ai/multica
+dependencies:
+  - name: postgresql
+    version: 16.7.27
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled

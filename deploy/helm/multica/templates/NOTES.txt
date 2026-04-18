@@ -1,0 +1,12 @@
+Thank you for installing Multica.
+
+This chart is designed to run frontend and backend as first-class workloads.
+
+Important notes:
+- Frontend public configuration is currently baked into the image at build time.
+- Production installs should prefer external PostgreSQL and existing Kubernetes Secrets.
+- Self-host/local installs may opt into the bundled PostgreSQL dependency by setting `postgresql.enabled=true`.
+
+Next steps:
+- Render with production overrides: `helm template {{ .Release.Name }} {{ .Chart.Name }} -f values-prod.yaml`
+- Dry-run install: `helm install {{ .Release.Name }} . --dry-run --debug -f values-prod.yaml`

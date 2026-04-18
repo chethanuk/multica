@@ -1,0 +1,71 @@
+global:
+  domain: multica.example.com
+
+frontend:
+  replicaCount: 2
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: app.multica.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+backend:
+  replicaCount: 2
+  existingSecret: multica-backend
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  securityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+  env:
+    - name: FRONTEND_ORIGIN
+      value: https://app.multica.example.com
+    - name: MULTICA_APP_URL
+      value: https://app.multica.example.com
+    - name: ALLOWED_ORIGINS
+      value: https://app.multica.example.com
+    - name: CORS_ALLOWED_ORIGINS
+      value: https://app.multica.example.com
+
+externalDatabase:
+  enabled: true
+  host: prod-postgres.example.com
+  port: 5432
+  name: multica
+  username: multica
+  existingSecret: multica-db
+
+postgresql:
+  enabled: false
+
+storage:
+  mode: s3
+  existingSecret: multica-storage
+  endpointKey: AWS_ENDPOINT_URL
+
+cloudfront:
+  enabled: true
+  existingSecret: multica-cloudfront
+  privateKeySecretKey: CLOUDFRONT_PRIVATE_KEY_SECRET
+
+networkPolicy:
+  enabled: true
+
+podDisruptionBudget:
+  enabled: true
